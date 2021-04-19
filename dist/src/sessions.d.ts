@@ -1,0 +1,22 @@
+import { BaseResp } from './utils';
+import MalanConfig from './config';
+declare type BaseSessionResponse = {
+    api_token: string;
+    authenticated_at: string;
+    expires_at: string;
+    id: string;
+    ip_address: string;
+    location: string;
+    revoked_at: string;
+    user_id: string;
+    is_valid: boolean;
+};
+declare type LoginResponse = BaseResp & BaseSessionResponse;
+declare type LogoutResponse = BaseResp & BaseSessionResponse;
+declare type IsValidResponse = boolean;
+declare type SessionResponse = BaseResp & BaseSessionResponse;
+declare function login(c: MalanConfig, username: string, password: string): Promise<LoginResponse>;
+declare function logout(c: MalanConfig, user_id: string, session_id: string): any;
+declare function getSession(c: MalanConfig, user_id: string, session_id: string): any;
+declare function isValid(c: MalanConfig, user_id: string, session_id: string): any;
+export { login, LoginResponse, logout, LogoutResponse, isValid, IsValidResponse, getSession, SessionResponse, };

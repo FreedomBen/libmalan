@@ -1,0 +1,104 @@
+import * as users from './users';
+import MalanConfig from './config';
+import { base, forSession } from '../test/test_config';
+
+import { regularAccount, uuidRegex, randomUsername } from '../test/test_helpers';
+
+describe('#getUser', () => {
+  it('Gets a user by ID', async () => {
+    const ra = await regularAccount()
+    const user = await users.getUser(forSession(ra.session), ra.id)
+    expect(user.data.id).toEqual(ra.id)
+  });
+})
+
+describe('#createUser', () => {
+  it('Creates a new user', async () => {
+    const rando = randomUsername()
+    const userParams = {
+      email: `${rando}@libmalan.com`,
+      username: `${rando}`,
+      password: `testuser@libmalan.com`,
+      first_name: `Tester${rando}`,
+      last_name: 'Buddy',
+    }
+    const newUser = await users.createUser(base, userParams)
+    expect(newUser.data.id).toMatch(uuidRegex)
+    expect(newUser.data.email).toMatch(/@libmalan.com$/)
+    expect(newUser.data.username).toMatch(/^test/)
+    expect(newUser.data.last_name).toEqual('Buddy')
+  });
+})
+
+describe('#acceptTos', () => {
+  it('Rejects and Accepts the Terms of Service', async () => {
+    const ra = await regularAccount()
+
+    const origUser = await users.getUser(forSession(ra.session), ra.id)
+    expect(origUser.data.tos_accepted).toEqual(true)
+
+    const rejectedUser = await users.acceptTos(forSession(ra.session), ra.id, false)
+    expect(rejectedUser.data.tos_accepted).toEqual(false)
+
+    const acceptedUser = await users.acceptTos(forSession(ra.session), ra.id, true)
+    expect(acceptedUser.data.tos_accepted).toEqual(true)
+  });
+})
+
+describe('#acceptPrivacyPolicy', () => {
+  it('Rejects and Accepts the Privacy Policy', async () => {
+    const ra = await regularAccount()
+
+    const origUser = await users.getUser(forSession(ra.session), ra.id)
+    expect(origUser.data.privacy_policy_accepted).toEqual(true)
+
+    const rejectedUser = await users.acceptPrivacyPolicy(forSession(ra.session), ra.id, false)
+    expect(rejectedUser.data.privacy_policy_accepted).toEqual(false)
+
+    const acceptedUser = await users.acceptPrivacyPolicy(forSession(ra.session), ra.id, true)
+    expect(acceptedUser.data.privacy_policy_accepted).toEqual(true)
+  });
+})
+
+describe('#updateUser', () => {
+  it('Accepts updates to the user', async () => {
+    const ra = await regularAccount()
+    const updateParams = {
+      email: "fakeemail@example.com",
+      nick_name: "new nickname",
+      sex: "Female",
+      gender: "Transgender Person",
+      race: ["Black or African American"],
+      ethnicity: "Hispanic or Latinx",
+      birthday: "2017-03-24T01:09:08Z",
+      weight: 145.8,
+      height: 69.5,
+    }
+    const updatedUser = (await users.updateUser(forSession(ra.session), ra.id, updateParams)).data
+    const retrievedUser = (await users.getUser(forSession(ra.session), ra.id)).data
+
+    expect(updatedUser.tos_accepted).toEqual(true)
+    expect(updatedUser.privacy_policy_accepted).toEqual(true)
+    expect(updatedUser.email).toMatch(/regularuser[0-9]+@libmalan.com/)
+    expect(updatedUser.nick_name).toEqual("new nickname")
+    expect(updatedUser.sex).toEqual("Female")
+    expect(updatedUser.gender).toEqual("Transgender Person")
+    expect(updatedUser.race).toEqual(["Black or African American"])
+    expect(updatedUser.ethnicity).toEqual("Hispanic or Latinx")
+    expect(updatedUser.birthday).toMatch(/^2017-03-24/)
+    expect(updatedUser.weight).toEqual("145.8")
+    expect(updatedUser.height).toEqual("69.5")
+
+    expect(retrievedUser.tos_accepted).toEqual(true)
+    expect(retrievedUser.privacy_policy_accepted).toEqual(true)
+    expect(retrievedUser.email).toMatch(/regularuser[0-9]+@libmalan.com/)
+    expect(retrievedUser.nick_name).toEqual("new nickname")
+    expect(retrievedUser.sex).toEqual("Female")
+    expect(retrievedUser.gender).toEqual("Transgender Person")
+    expect(retrievedUser.race).toEqual(["Black or African American"])
+    expect(retrievedUser.ethnicity).toEqual("Hispanic or Latinx")
+    expect(retrievedUser.birthday).toMatch(/^2017-03-24/)
+    expect(retrievedUser.weight).toEqual("145.8")
+    expect(retrievedUser.height).toEqual("69.5")
+  });
+})
