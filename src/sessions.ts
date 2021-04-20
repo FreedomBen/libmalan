@@ -19,6 +19,7 @@ type BaseSessionResponse = {
 type LoginResponse = BaseResp & BaseSessionResponse
 type LogoutResponse = BaseResp & BaseSessionResponse
 type IsValidResponse = boolean
+type IsValidWithRoleResponse = boolean
 type SessionResponse = BaseResp & BaseSessionResponse
 
 function login(c: MalanConfig, username: string, password: string): Promise<LoginResponse> {
@@ -47,6 +48,14 @@ function isValid(c: MalanConfig, user_id: string, session_id: string) {
     .then(resp => resp.data.is_valid)
 }
 
+function isValidWithRole(c: MalanConfig, user_id: string, session_id: string, role: string) {
+  return superagent
+    .get(fullUrl(c, `/api/users/${user_id}/sessions/${session_id}/roles/${role}`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .then(resp => resp.data.is_valid)
+}
+
 export {
   login,
   LoginResponse,
@@ -54,6 +63,8 @@ export {
   LogoutResponse,
   isValid,
   IsValidResponse,
+  isValidWithRole,
+  IsValidWithRoleResponse,
   getSession,
   SessionResponse,
 }
