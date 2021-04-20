@@ -14,9 +14,11 @@ declare type BaseSessionResponse = {
 declare type LoginResponse = BaseResp & BaseSessionResponse;
 declare type LogoutResponse = BaseResp & BaseSessionResponse;
 declare type IsValidResponse = boolean;
+declare type IsValidWithRoleResponse = boolean;
 declare type SessionResponse = BaseResp & BaseSessionResponse;
 declare function login(c: MalanConfig, username: string, password: string): Promise<LoginResponse>;
 declare function logout(c: MalanConfig, user_id: string, session_id: string): any;
 declare function getSession(c: MalanConfig, user_id: string, session_id: string): any;
 declare function isValid(c: MalanConfig, user_id: string, session_id: string): any;
-export { login, LoginResponse, logout, LogoutResponse, isValid, IsValidResponse, getSession, SessionResponse, };
+declare function isValidWithRole(c: MalanConfig, user_id: string, session_id: string, role: string): any;
+export { login, LoginResponse, logout, LogoutResponse, isValid, IsValidResponse, isValidWithRole, IsValidWithRoleResponse, getSession, SessionResponse, };

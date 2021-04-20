@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSession = exports.isValid = exports.logout = exports.login = void 0;
+exports.getSession = exports.isValidWithRole = exports.isValid = exports.logout = exports.login = void 0;
 const superagent = require('superagent');
 const utils_1 = require("./utils");
 function login(c, username, password) {
@@ -29,3 +29,11 @@ function isValid(c, user_id, session_id) {
         .then(resp => resp.data.is_valid);
 }
 exports.isValid = isValid;
+function isValidWithRole(c, user_id, session_id, role) {
+    return superagent
+        .get(utils_1.fullUrl(c, `/api/users/${user_id}/sessions/${session_id}/roles/${role}`))
+        .set('Authorization', `Bearer ${c.api_token}`)
+        .then(resp => (Object.assign(Object.assign(Object.assign({}, resp), { data: resp.body.data }), resp.body.data)))
+        .then(resp => resp.data.is_valid);
+}
+exports.isValidWithRole = isValidWithRole;
