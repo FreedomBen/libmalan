@@ -26,6 +26,7 @@ declare type BaseUserResp = {
     latest_pp_accept_ver: number;
     tos_accepted: boolean;
     privacy_policy_accepted: boolean;
+    custom_attrs: object;
 };
 declare type UserResponse = BaseResp & BaseUserResp;
 interface CreateUserParams {
@@ -49,6 +50,7 @@ interface UpdateUserParams {
     birthday?: string;
     weight?: number;
     height?: number;
+    custom_attrs?: object;
 }
 declare function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserResponse>;
 declare function getUser(c: MalanConfig, id: string): Promise<UserResponse>;

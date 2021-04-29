@@ -31,3 +31,11 @@ const isAdmin = await malan.isValidWithRole(malanConfig, user.id, session_id, "a
 session = await malan.logout(malanConfig, user.id, session_id)
 ```
 
+## Release Process
+
+To release a new version:
+
+1.  Update version number in `package.json`
+1.  Run a build:  `npm run build`
+1.  Build a tarball you can verify:  `npm pack`
+1.  Publish latest version:  `npm publish`
