@@ -28,6 +28,7 @@ type BaseUserResp = {
   latest_pp_accept_ver: number,
   tos_accepted: boolean,
   privacy_policy_accepted: boolean,
+  custom_attrs: object,
 }
 
 type UserResponse = BaseResp & BaseUserResp
@@ -54,6 +55,7 @@ interface UpdateUserParams {
   birthday?: string,
   weight?: number,
   height?: number,
+  custom_attrs?: object,
 }
 
 function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserResponse> {

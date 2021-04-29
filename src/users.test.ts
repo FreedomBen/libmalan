@@ -15,18 +15,28 @@ describe('#getUser', () => {
 describe('#createUser', () => {
   it('Creates a new user', async () => {
     const rando = randomUsername()
+    const custom_attrs = {
+      guid: "ABCDEFGHIJKLMNOP",
+      age: 18,
+      names: {
+        first: "Edgar",
+        last: "Poe",
+      }
+    }
     const userParams = {
       email: `${rando}@libmalan.com`,
       username: `${rando}`,
       password: `testuser@libmalan.com`,
       first_name: `Tester${rando}`,
       last_name: 'Buddy',
+      custom_attrs: custom_attrs,
     }
     const newUser = await users.createUser(base, userParams)
     expect(newUser.data.id).toMatch(uuidRegex)
     expect(newUser.data.email).toMatch(/@libmalan.com$/)
     expect(newUser.data.username).toMatch(/^test/)
     expect(newUser.data.last_name).toEqual('Buddy')
+    expect(newUser.data.custom_attrs).toEqual(custom_attrs)
   });
 })
 
@@ -63,6 +73,14 @@ describe('#acceptPrivacyPolicy', () => {
 describe('#updateUser', () => {
   it('Accepts updates to the user', async () => {
     const ra = await regularAccount()
+    const custom_attrs = {
+      guid: "ABCDEFGHIJKLMNOP",
+      age: 18,
+      names: {
+        first: "Edgar",
+        last: "Poe",
+      }
+    }
     const updateParams = {
       email: "fakeemail@example.com",
       nick_name: "new nickname",
@@ -73,6 +91,7 @@ describe('#updateUser', () => {
       birthday: "2017-03-24T01:09:08Z",
       weight: 145.8,
       height: 69.5,
+      custom_attrs: custom_attrs,
     }
     const updatedUser = (await users.updateUser(forSession(ra.session), ra.id, updateParams)).data
     const retrievedUser = (await users.getUser(forSession(ra.session), ra.id)).data
@@ -88,6 +107,7 @@ describe('#updateUser', () => {
     expect(updatedUser.birthday).toMatch(/^2017-03-24/)
     expect(updatedUser.weight).toEqual("145.8")
     expect(updatedUser.height).toEqual("69.5")
+    expect(updatedUser.custom_attrs).toEqual(custom_attrs)
 
     expect(retrievedUser.tos_accepted).toEqual(true)
     expect(retrievedUser.privacy_policy_accepted).toEqual(true)
@@ -100,5 +120,6 @@ describe('#updateUser', () => {
     expect(retrievedUser.birthday).toMatch(/^2017-03-24/)
     expect(retrievedUser.weight).toEqual("145.8")
     expect(retrievedUser.height).toEqual("69.5")
+    expect(retrievedUser.custom_attrs).toEqual(custom_attrs)
   });
 })
