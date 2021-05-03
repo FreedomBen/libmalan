@@ -10,8 +10,7 @@
     "test": "jest --verbose",
     "test:d": "npm run build && jest --config ./jest.config.debug.js ./dist/src",
     "test:debug": "npm run build && node inspect ./node_modules/jest/bin/jest.js --runInBand --config ./jest.config.debug.js ./dist/src",
-    "test:debug:chrome": "npm run build && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config ./jest.config.debug.js ./dist/src",
-    "prepublish": "npm run build"
+    "test:debug:chrome": "npm run build && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config ./jest.config.debug.js ./dist/src"
   },
   "dependencies": {
     "superagent": "^5.3.1"
