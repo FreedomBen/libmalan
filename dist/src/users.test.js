@@ -19,6 +19,20 @@ describe('#getUser', () => {
         expect(user.data.id).toEqual(ra.id);
     }));
 });
+describe('#whoamiFull', () => {
+    it('Gets a user by API token', () => __awaiter(void 0, void 0, void 0, function* () {
+        const ra = yield test_helpers_1.regularAccount();
+        const user = yield users.whoamiFull(test_config_1.forSession(ra.session));
+        expect(user.data.id).toEqual(ra.id);
+    }));
+});
+describe('#whoami', () => {
+    it('Gets an abbreviated user by API token', () => __awaiter(void 0, void 0, void 0, function* () {
+        const ra = yield test_helpers_1.regularAccount();
+        const user = yield users.whoami(test_config_1.forSession(ra.session));
+        expect(user.data.user_id).toEqual(ra.id);
+    }));
+});
 describe('#createUser', () => {
     it('Creates a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const rando = test_helpers_1.randomUsername();

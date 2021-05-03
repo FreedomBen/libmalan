@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptPrivacyPolicy = exports.acceptTos = exports.updateUser = exports.createUser = exports.getUser = void 0;
+exports.acceptPrivacyPolicy = exports.acceptTos = exports.updateUser = exports.createUser = exports.whoamiFull = exports.whoami = exports.getUser = void 0;
 const superagent = require('superagent');
 const utils_1 = require("./utils");
 function createUser(c, params) {
@@ -19,6 +19,22 @@ function getUser(c, id) {
     //.catch(err => ({ ...err, ok: false }))
 }
 exports.getUser = getUser;
+function whoamiFull(c) {
+    return superagent
+        .get(utils_1.fullUrl(c, `/api/users/me`))
+        .set('Authorization', `Bearer ${c.api_token}`)
+        .then(resp => (Object.assign(Object.assign({}, resp), { data: Object.assign({}, resp.body.data), ok: true })));
+    //.catch(err => ({ ...err, ok: false }))
+}
+exports.whoamiFull = whoamiFull;
+function whoami(c) {
+    return superagent
+        .get(utils_1.fullUrl(c, `/api/users/whoami`))
+        .set('Authorization', `Bearer ${c.api_token}`)
+        .then(resp => (Object.assign(Object.assign({}, resp), { data: Object.assign({}, resp.body.data), ok: true })));
+    //.catch(err => ({ ...err, ok: false }))
+}
+exports.whoami = whoami;
 function updateUser(c, id, params) {
     return superagent
         .put(utils_1.fullUrl(c, `/api/users/${id}`))

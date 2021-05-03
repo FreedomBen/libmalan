@@ -29,6 +29,13 @@ declare type BaseUserResp = {
     custom_attrs: object;
 };
 declare type UserResponse = BaseResp & BaseUserResp;
+declare type WhoamiResponse = BaseResp & {
+    user_id: string;
+    user_roles: Array<string>;
+    expires_at: string;
+    terms_of_service: string;
+    privacy_policy: string;
+};
 interface CreateUserParams {
     email: string;
     username: string;
@@ -54,7 +61,9 @@ interface UpdateUserParams {
 }
 declare function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserResponse>;
 declare function getUser(c: MalanConfig, id: string): Promise<UserResponse>;
+declare function whoamiFull(c: MalanConfig): Promise<UserResponse>;
+declare function whoami(c: MalanConfig): Promise<WhoamiResponse>;
 declare function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse>;
 declare function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
 declare function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
-export { UserResponse, getUser, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };
+export { UserResponse, getUser, whoami, whoamiFull, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };

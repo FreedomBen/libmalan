@@ -33,6 +33,14 @@ type BaseUserResp = {
 
 type UserResponse = BaseResp & BaseUserResp
 
+type WhoamiResponse = BaseResp & {
+  user_id: string,
+  user_roles: Array<string>,
+  expires_at: string,
+  terms_of_service: string,
+  privacy_policy: string,
+}
+
 interface CreateUserParams {
   email: string,
   username: string,
@@ -74,6 +82,22 @@ function getUser(c: MalanConfig, id: string): Promise<UserResponse> {
     //.catch(err => ({ ...err, ok: false }))
 }
 
+function whoamiFull(c: MalanConfig): Promise<UserResponse> {
+  return superagent
+    .get(fullUrl(c, `/api/users/me`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
+function whoami(c: MalanConfig): Promise<WhoamiResponse> {
+  return superagent
+    .get(fullUrl(c, `/api/users/whoami`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
 function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse> {
   return superagent
     .put(fullUrl(c, `/api/users/${id}`))
@@ -104,6 +128,8 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
 export {
   UserResponse,
   getUser,
+  whoami,
+  whoamiFull,
   createUser,
   updateUser,
   acceptTos,

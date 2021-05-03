@@ -12,6 +12,22 @@ describe('#getUser', () => {
   });
 })
 
+describe('#whoamiFull', () => {
+  it('Gets a user by API token', async () => {
+    const ra = await regularAccount()
+    const user = await users.whoamiFull(forSession(ra.session))
+    expect(user.data.id).toEqual(ra.id)
+  });
+})
+
+describe('#whoami', () => {
+  it('Gets an abbreviated user by API token', async () => {
+    const ra = await regularAccount()
+    const user = await users.whoami(forSession(ra.session))
+    expect(user.data.user_id).toEqual(ra.id)
+  });
+})
+
 describe('#createUser', () => {
   it('Creates a new user', async () => {
     const rando = randomUsername()
