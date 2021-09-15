@@ -6,3 +6,4 @@ Object.defineProperty(exports, "logout", { enumerable: true, get: function () { 
 var users_1 = require("./users");
 Object.defineProperty(exports, "getUser", { enumerable: true, get: function () { return users_1.getUser; } });
 Object.defineProperty(exports, "createUser", { enumerable: true, get: function () { return users_1.createUser; } });
+Object.defineProperty(exports, "updateUser", { enumerable: true, get: function () { return users_1.updateUser; } });
