@@ -13,13 +13,13 @@ const sessions = require("./sessions");
 const test_config_1 = require("../test/test_config");
 describe('#login', () => {
     it('Returns a new API token', () => __awaiter(void 0, void 0, void 0, function* () {
-        const newSession = yield sessions.login(test_config_1.base, "ben", "password10");
+        const newSession = yield sessions.login(test_config_1.base, "root", "password10");
         expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/);
     }));
 });
 describe('#logout', () => {
     it('Returns session as invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-        const newSession = yield sessions.login(test_config_1.base, "ben", "password10");
+        const newSession = yield sessions.login(test_config_1.base, "root", "password10");
         expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/);
         const updated = yield sessions.logout(test_config_1.forSession(newSession), newSession.user_id, newSession.id);
         expect(updated.is_valid).toEqual(false);
@@ -27,7 +27,7 @@ describe('#logout', () => {
 });
 describe('#getSession', () => {
     it('Returns session', () => __awaiter(void 0, void 0, void 0, function* () {
-        const newSession = yield sessions.login(test_config_1.base, "ben", "password10");
+        const newSession = yield sessions.login(test_config_1.base, "root", "password10");
         expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/);
         const updated = yield sessions.getSession(test_config_1.forSession(newSession), newSession.user_id, newSession.id);
         expect(updated.id).toEqual(newSession.id);
@@ -36,11 +36,11 @@ describe('#getSession', () => {
 });
 describe('#isValid', () => {
     it('Returns session', () => __awaiter(void 0, void 0, void 0, function* () {
-        const newSession = yield sessions.login(test_config_1.base, "ben", "password10");
+        const newSession = yield sessions.login(test_config_1.base, "root", "password10");
         expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/);
         expect(yield sessions.isValid(test_config_1.forSession(newSession), newSession.user_id, newSession.id)).toEqual(true);
         const updated = yield sessions.logout(test_config_1.forSession(newSession), newSession.user_id, newSession.id);
-        const secondSession = yield sessions.login(test_config_1.base, "ben", "password10");
+        const secondSession = yield sessions.login(test_config_1.base, "root", "password10");
         expect(yield sessions.isValid(test_config_1.forSession(secondSession), newSession.user_id, newSession.id)).toEqual(false);
     }));
 });
