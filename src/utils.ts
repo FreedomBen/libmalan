@@ -14,7 +14,9 @@ interface BaseResp {
 }
 
 function fullUrl(config: MalanConfig, path: string): string {
-  return `http://${config.host}${path}`
+  return config.host.toLowerCase().match(/^https?:\/\//)
+    ? `${config.host}${path}`
+    : `http://${config.host}${path}`
 }
 
 export {
