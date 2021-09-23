@@ -127,6 +127,9 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
 
 export {
   UserResponse,
+  WhoamiResponse,
+  CreateUserParams,
+  UpdateUserParams,
   getUser,
   whoami,
   whoamiFull,
