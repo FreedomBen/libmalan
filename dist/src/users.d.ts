@@ -66,4 +66,4 @@ declare function whoami(c: MalanConfig): Promise<WhoamiResponse>;
 declare function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse>;
 declare function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
 declare function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
-export { UserResponse, getUser, whoami, whoamiFull, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };
+export { UserResponse, WhoamiResponse, CreateUserParams, UpdateUserParams, getUser, whoami, whoamiFull, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };
