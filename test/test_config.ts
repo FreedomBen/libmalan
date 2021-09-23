@@ -1,7 +1,7 @@
 import MalanConfig from '../src/config';
 
 export const base = {
-  host: "localhost:4000",
+  host: "0.0.0.0:4000",
   api_token: "",
 }
 
