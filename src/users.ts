@@ -41,6 +41,17 @@ type WhoamiResponse = BaseResp & {
   privacy_policy: string,
 }
 
+type ResetPasswordRequestResponse = BaseResp & {
+  password_reset_token: string,
+  password_reset_token_expires_at: string,
+}
+
+type ResetPasswordResponse = BaseResp & {
+  ok: boolean,
+  err?: string,
+  msg?: string,
+}
+
 interface CreateUserParams {
   email: string,
   username: string,
@@ -125,6 +136,23 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
     //.catch(err => ({ ...err, ok: false }))
 }
 
+function resetPasswordRequest(c: MalanConfig, id: string): Promise<ResetPasswordRequestResponse> {
+  return superagent
+    .post(fullUrl(c, `/admin/api/users/${id}/reset_password`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
+function resetPassword(c: MalanConfig, token: string, newPassword: string): Promise<ResetPasswordResponse> {
+  return superagent
+    .put(fullUrl(c, `/admin/api/users/reset_password/${token}`))
+    .send({new_password: newPassword})
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
 export {
   UserResponse,
   WhoamiResponse,
@@ -137,4 +165,6 @@ export {
   updateUser,
   acceptTos,
   acceptPrivacyPolicy,
+  resetPasswordRequest,
+  resetPassword,
 }
