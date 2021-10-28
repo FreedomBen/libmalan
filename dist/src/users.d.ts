@@ -57,6 +57,7 @@ interface UpdateUserParams {
     birthday?: string;
     weight?: number;
     height?: number;
+    roles?: Array<string>;
     custom_attrs?: object;
 }
 declare function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserResponse>;
