@@ -63,6 +63,7 @@ interface UpdateUserParams {
   birthday?: string,
   weight?: number,
   height?: number,
+  roles?: Array<string>,
   custom_attrs?: object,
 }
 
