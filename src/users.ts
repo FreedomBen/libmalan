@@ -31,6 +31,8 @@ type BaseUserResp = {
   custom_attrs: object,
 }
 
+type MalanRole = 'admin' | 'moderator' | 'user'
+
 type UserResponse = BaseResp & BaseUserResp
 
 type WhoamiResponse = BaseResp & {
@@ -63,7 +65,7 @@ interface UpdateUserParams {
   birthday?: string,
   weight?: number,
   height?: number,
-  roles?: Array<string>,
+  roles?: Array<MalanRole>,
   custom_attrs?: object,
 }
 
@@ -129,6 +131,7 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
 export {
   UserResponse,
   WhoamiResponse,
+  MalanRole,
   CreateUserParams,
   UpdateUserParams,
   getUser,
