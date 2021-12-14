@@ -139,3 +139,58 @@ describe('#updateUser', () => {
     expect(retrievedUser.custom_attrs).toEqual(custom_attrs)
   });
 })
+
+describe('#adminUpdateUser', () => {
+  it('Accepts updates to the user', async () => {
+    const ra = await regularAccount()
+    const custom_attrs = {
+      guid: "ABCDEFGHIJKLMNOP",
+      age: 18,
+      names: {
+        first: "Edgar",
+        last: "Poe",
+      }
+    }
+    const updateParams = {
+      username: "totallynewusername",
+      email: "fakeemail@example.com",
+      nick_name: "new nickname",
+      sex: "Female",
+      gender: "Transgender Person",
+      race: ["Black or African American"],
+      ethnicity: "Hispanic or Latinx",
+      birthday: "2017-03-24T01:09:08Z",
+      weight: 145.8,
+      height: 69.5,
+      custom_attrs: custom_attrs,
+    }
+    const updatedUser = (await users.updateUser(forSession(ra.session), ra.id, updateParams)).data
+    const retrievedUser = (await users.getUser(forSession(ra.session), ra.id)).data
+
+    expect(updatedUser.tos_accepted).toEqual(true)
+    expect(updatedUser.privacy_policy_accepted).toEqual(true)
+    expect(updatedUser.email).toMatch(/regularuser[0-9]+@libmalan.com/)
+    expect(updatedUser.nick_name).toEqual("new nickname")
+    expect(updatedUser.sex).toEqual("Female")
+    expect(updatedUser.gender).toEqual("Transgender Person")
+    expect(updatedUser.race).toEqual(["Black or African American"])
+    expect(updatedUser.ethnicity).toEqual("Hispanic or Latinx")
+    expect(updatedUser.birthday).toMatch(/^2017-03-24/)
+    expect(updatedUser.weight).toEqual("145.8")
+    expect(updatedUser.height).toEqual("69.5")
+    expect(updatedUser.custom_attrs).toEqual(custom_attrs)
+
+    expect(retrievedUser.tos_accepted).toEqual(true)
+    expect(retrievedUser.privacy_policy_accepted).toEqual(true)
+    expect(retrievedUser.email).toMatch(/regularuser[0-9]+@libmalan.com/)
+    expect(retrievedUser.nick_name).toEqual("new nickname")
+    expect(retrievedUser.sex).toEqual("Female")
+    expect(retrievedUser.gender).toEqual("Transgender Person")
+    expect(retrievedUser.race).toEqual(["Black or African American"])
+    expect(retrievedUser.ethnicity).toEqual("Hispanic or Latinx")
+    expect(retrievedUser.birthday).toMatch(/^2017-03-24/)
+    expect(retrievedUser.weight).toEqual("145.8")
+    expect(retrievedUser.height).toEqual("69.5")
+    expect(retrievedUser.custom_attrs).toEqual(custom_attrs)
+  });
+})

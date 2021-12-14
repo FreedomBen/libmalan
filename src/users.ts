@@ -108,6 +108,15 @@ function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promi
     //.catch(err => ({ ...err, ok: false }))
 }
 
+function adminUpdateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse> {
+  return superagent
+    .put(fullUrl(c, `/api/admin/users/${id}`))
+    .send({user: params})
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
 function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse> {
   return superagent
     .put(fullUrl(c, `/api/users/${id}`))
