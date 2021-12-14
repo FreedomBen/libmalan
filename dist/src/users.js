@@ -44,6 +44,14 @@ function updateUser(c, id, params) {
     //.catch(err => ({ ...err, ok: false }))
 }
 exports.updateUser = updateUser;
+function adminUpdateUser(c, id, params) {
+    return superagent
+        .put(utils_1.fullUrl(c, `/api/admin/users/${id}`))
+        .send({ user: params })
+        .set('Authorization', `Bearer ${c.api_token}`)
+        .then(resp => (Object.assign(Object.assign({}, resp), { data: Object.assign({}, resp.body.data), ok: true })));
+    //.catch(err => ({ ...err, ok: false }))
+}
 function acceptTos(c, id, accept) {
     return superagent
         .put(utils_1.fullUrl(c, `/api/users/${id}`))
