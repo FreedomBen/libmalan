@@ -75,6 +75,14 @@ function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserRespo
     //.catch(err => ({ ...err, ok: false }))
 }
 
+function getUserByUsername(c: MalanConfig, username: string): Promise<UserResponse> {
+  return superagent
+    .get(fullUrl(c, `/api/users/${username}`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    //.catch(err => ({ ...err, ok: false }))
+}
+
 function getUser(c: MalanConfig, id: string): Promise<UserResponse> {
   return superagent
     .get(fullUrl(c, `/api/users/${id}`))
@@ -141,6 +149,7 @@ export {
   CreateUserParams,
   UpdateUserParams,
   getUser,
+  getUserByUsername,
   whoami,
   whoamiFull,
   createUser,

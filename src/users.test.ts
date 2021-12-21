@@ -12,6 +12,14 @@ describe('#getUser', () => {
   });
 })
 
+describe('#getUserByUsername', () => {
+  it('Gets a user by ID', async () => {
+    const ra = await regularAccount()
+    const user = await users.getUserByUsername(forSession(ra.session), ra.username)
+    expect(user.data.id).toEqual(ra.id)
+  });
+})
+
 describe('#whoamiFull', () => {
   it('Gets a user by API token', async () => {
     const ra = await regularAccount()
