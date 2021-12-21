@@ -19,6 +19,13 @@ describe('#getUser', () => {
         expect(user.data.id).toEqual(ra.id);
     }));
 });
+describe('#getUserByUsername', () => {
+    it('Gets a user by ID', () => __awaiter(void 0, void 0, void 0, function* () {
+        const ra = yield test_helpers_1.regularAccount();
+        const user = yield users.getUserByUsername(test_config_1.forSession(ra.session), ra.username);
+        expect(user.data.id).toEqual(ra.id);
+    }));
+});
 describe('#whoamiFull', () => {
     it('Gets a user by API token', () => __awaiter(void 0, void 0, void 0, function* () {
         const ra = yield test_helpers_1.regularAccount();

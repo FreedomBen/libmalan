@@ -61,10 +61,11 @@ interface UpdateUserParams {
     custom_attrs?: object;
 }
 declare function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserResponse>;
+declare function getUserByUsername(c: MalanConfig, username: string): Promise<UserResponse>;
 declare function getUser(c: MalanConfig, id: string): Promise<UserResponse>;
 declare function whoamiFull(c: MalanConfig): Promise<UserResponse>;
 declare function whoami(c: MalanConfig): Promise<WhoamiResponse>;
 declare function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse>;
 declare function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
 declare function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse>;
-export { UserResponse, WhoamiResponse, CreateUserParams, UpdateUserParams, getUser, whoami, whoamiFull, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };
+export { UserResponse, WhoamiResponse, CreateUserParams, UpdateUserParams, getUser, getUserByUsername, whoami, whoamiFull, createUser, updateUser, acceptTos, acceptPrivacyPolicy, };

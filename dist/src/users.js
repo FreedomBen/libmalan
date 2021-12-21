@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptPrivacyPolicy = exports.acceptTos = exports.updateUser = exports.createUser = exports.whoamiFull = exports.whoami = exports.getUser = void 0;
+exports.acceptPrivacyPolicy = exports.acceptTos = exports.updateUser = exports.createUser = exports.whoamiFull = exports.whoami = exports.getUserByUsername = exports.getUser = void 0;
 const superagent = require('superagent');
 const utils_1 = require("./utils");
 function createUser(c, params) {
@@ -11,6 +11,14 @@ function createUser(c, params) {
     //.catch(err => ({ ...err, ok: false }))
 }
 exports.createUser = createUser;
+function getUserByUsername(c, username) {
+    return superagent
+        .get(utils_1.fullUrl(c, `/api/users/${username}`))
+        .set('Authorization', `Bearer ${c.api_token}`)
+        .then(resp => (Object.assign(Object.assign({}, resp), { data: Object.assign({}, resp.body.data), ok: true })));
+    //.catch(err => ({ ...err, ok: false }))
+}
+exports.getUserByUsername = getUserByUsername;
 function getUser(c, id) {
     return superagent
         .get(utils_1.fullUrl(c, `/api/users/${id}`))
