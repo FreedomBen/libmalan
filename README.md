@@ -71,7 +71,20 @@ npm run test
 
 ## Release Process
 
-To release a new version:
+### Authentication with npm
+
+To publish, you'll need an npm auth token.  There are numerous different ways to
+accomplish this, such as running `npm login`.  If you have 2 factor enalbed (which
+you should if you don't), the easiest way is to issue an automation token.
+
+Put that automation token in the environment variable `NPM_TOKEN` then add to
+`libmalan/.npmrc`
+
+```bash
+echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
+```
+
+### To release a new version:
 
 1.  Update version number in `package.json`
 1.  Run a build:  `npm run build`
