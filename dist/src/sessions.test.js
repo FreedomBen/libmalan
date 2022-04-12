@@ -13,7 +13,7 @@ const sessions = require("./sessions");
 const test_config_1 = require("../test/test_config");
 describe('#login', () => {
     it('Returns a new API token', () => __awaiter(void 0, void 0, void 0, function* () {
-        const newSession = yield sessions.login(test_config_1.base, "root", "password10");
+        const newSession = yield sessions.login(test_config_1.base, "root", "password10", 60);
         expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/);
     }));
 });

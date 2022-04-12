@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSession = exports.isValidWithRole = exports.isValid = exports.logout = exports.login = void 0;
 const superagent = require('superagent');
 const utils_1 = require("./utils");
-function login(c, username, password) {
+function login(c, username, password, expirationSeconds = 0) {
     return superagent
         .post(utils_1.fullUrl(c, "/api/sessions"))
-        .send({ session: { username, password } })
+        .send({ session: { username, password, never_expires: expirationSeconds === 0, expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds, } })
         .then(resp => (Object.assign(Object.assign(Object.assign({}, resp), { data: resp.body.data }), resp.body.data)));
 }
 exports.login = login;
