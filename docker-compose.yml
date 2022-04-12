@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  postgres:
+    image: 'docker.io/postgres:12.6-alpine'
+    volumes:
+      - 'pgdata:/var/lib/postgresql/data'  # Use a docker volume for the database files
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+
+  malan:
+    image: 'docker.io/freedomben/malan-dev:latest'
+    # image: 'docker.io/freedomben/malan-dev-arm:latest'  # use this image if on ARM
+    ports:
+      - "4000:4000"
+    environment:
+      DB_INIT: 'Yes'
+      DB_USERNAME: 'postgres'
+      DB_PASSWORD: 'postgres'
+      DB_HOSTNAME: 'postgres'
+      BIND_ADDR: '0.0.0.0'
+    depends_on:
+      - 'postgres'
+
+volumes:
+  pgdata:
+
