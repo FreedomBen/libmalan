@@ -4,7 +4,7 @@ import { base, forSession } from '../test/test_config';
 
 describe('#login', () => {
   it('Returns a new API token', async () => {
-    const newSession = await sessions.login(base, "root", "password10")
+    const newSession = await sessions.login(base, "root", "password10", 60)
     expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/)
   });
 })

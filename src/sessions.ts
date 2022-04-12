@@ -22,10 +22,10 @@ type IsValidResponse = boolean
 type IsValidWithRoleResponse = boolean
 type SessionResponse = BaseResp & BaseSessionResponse
 
-function login(c: MalanConfig, username: string, password: string): Promise<LoginResponse> {
+function login(c: MalanConfig, username: string, password: string, expirationSeconds = 0): Promise<LoginResponse> {
   return superagent
     .post(fullUrl(c, "/api/sessions"))
-    .send({session: {username, password}})
+    .send({session: {username, password, never_expires: expirationSeconds === 0, expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds, }})
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
 }
 
