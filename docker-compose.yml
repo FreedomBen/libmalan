@@ -10,7 +10,7 @@ services:
 
   malan:
     image: 'docker.io/freedomben/malan-dev:latest'
-    # image: 'docker.io/freedomben/malan-dev-arm:latest'  # use this image if on ARM
+    # image: 'docker.io/freedomben/malan-arm-dev:latest'  # use this image if on ARM
     ports:
       - "4000:4000"
     environment:
