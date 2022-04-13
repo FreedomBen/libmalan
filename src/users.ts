@@ -1,6 +1,6 @@
 const superagent = require('superagent');
 
-import { fullUrl, BaseResp } from './utils';
+import { fullUrl, BaseResp, ErrorResponse } from './utils';
 
 import MalanConfig from './config';
 import { handleResponseError } from './errors';
@@ -160,4 +160,5 @@ export {
   updateUser,
   acceptTos,
   acceptPrivacyPolicy,
+  ErrorResponse,
 }
