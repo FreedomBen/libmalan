@@ -3,6 +3,7 @@ const superagent = require('superagent');
 import { fullUrl, BaseResp } from './utils';
 
 import MalanConfig from './config';
+import { handleResponseError } from './errors';
 
 type BaseSessionResponse = {
   api_token: string,
@@ -27,6 +28,7 @@ function login(c: MalanConfig, username: string, password: string, expirationSec
     .post(fullUrl(c, "/api/sessions"))
     .send({session: {username, password, never_expires: expirationSeconds === 0, expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds, }})
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .catch(handleResponseError)
 }
 
 function logout(c: MalanConfig, user_id: string, session_id: string) {
@@ -34,6 +36,7 @@ function logout(c: MalanConfig, user_id: string, session_id: string) {
     .del(fullUrl(c, `/api/users/${user_id}/sessions/${session_id}`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .catch(handleResponseError)
 }
 
 function getSession(c: MalanConfig, user_id: string, session_id: string) {
@@ -41,6 +44,7 @@ function getSession(c: MalanConfig, user_id: string, session_id: string) {
     .get(fullUrl(c, `/api/users/${user_id}/sessions/${session_id}`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .catch(handleResponseError)
 }
 
 function isValid(c: MalanConfig, user_id: string, session_id: string) {
@@ -54,6 +58,7 @@ function isValidWithRole(c: MalanConfig, user_id: string, session_id: string, ro
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
     .then(resp => resp.data.is_valid)
+    .catch(handleResponseError)
 }
 
 export {

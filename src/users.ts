@@ -3,6 +3,7 @@ const superagent = require('superagent');
 import { fullUrl, BaseResp } from './utils';
 
 import MalanConfig from './config';
+import { handleResponseError } from './errors';
 
 type BaseUserResp = {
   id:  string,
@@ -72,7 +73,7 @@ function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserRespo
     .post(fullUrl(c, "/api/users"))
     .send({user: params})
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function getUserByUsername(c: MalanConfig, username: string): Promise<UserResponse> {
@@ -80,7 +81,7 @@ function getUserByUsername(c: MalanConfig, username: string): Promise<UserRespon
     .get(fullUrl(c, `/api/users/${username}`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function getUser(c: MalanConfig, id: string): Promise<UserResponse> {
@@ -88,7 +89,7 @@ function getUser(c: MalanConfig, id: string): Promise<UserResponse> {
     .get(fullUrl(c, `/api/users/${id}`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function whoamiFull(c: MalanConfig): Promise<UserResponse> {
@@ -96,7 +97,7 @@ function whoamiFull(c: MalanConfig): Promise<UserResponse> {
     .get(fullUrl(c, `/api/users/me`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function whoami(c: MalanConfig): Promise<WhoamiResponse> {
@@ -104,7 +105,7 @@ function whoami(c: MalanConfig): Promise<WhoamiResponse> {
     .get(fullUrl(c, `/api/users/whoami`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse> {
@@ -113,7 +114,7 @@ function updateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promi
     .send({user: params})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function adminUpdateUser(c: MalanConfig, id: string, params: UpdateUserParams): Promise<UserResponse> {
@@ -122,7 +123,7 @@ function adminUpdateUser(c: MalanConfig, id: string, params: UpdateUserParams): 
     .send({user: params})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse> {
@@ -131,7 +132,7 @@ function acceptTos(c: MalanConfig, id: string, accept: boolean): Promise<UserRes
     .send({user: {accept_tos: accept}})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promise<UserResponse> {
@@ -140,7 +141,7 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
     .send({user: {accept_privacy_policy: accept}})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
-    //.catch(err => ({ ...err, ok: false }))
+    .catch(handleResponseError)
 }
 
 export {
