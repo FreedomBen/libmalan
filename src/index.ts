@@ -10,3 +10,7 @@ export{
   createUser,
   updateUser
 } from './users'
+
+export {
+  MalanError
+} from './errors'
