@@ -8,7 +8,8 @@ export {
 export{
   getUser,
   createUser,
-  updateUser
+  updateUser,
+  getUserByUsername,
 } from './users'
 
 export {
