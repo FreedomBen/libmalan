@@ -48,7 +48,7 @@ interface CreateUserParams {
   password: string,
   first_name: string,
   last_name: string,
-  birthday?: string,
+  birthday?: Date,
   phone_numbers?: Array<{number: string}>
 }
 

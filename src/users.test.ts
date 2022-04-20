@@ -47,12 +47,15 @@ describe('#createUser', () => {
         last: "Poe",
       }
     }
+    const date = new Date()
     const userParams = {
       email: `${rando}@libmalan.com`,
       username: `${rando}`,
       password: `testuser@libmalan.com`,
       first_name: `Tester${rando}`,
       last_name: 'Buddy',
+      phone_numbers: [{number: '111-435-1334'}],
+      birthday: date,
       custom_attrs: custom_attrs,
     }
     const newUser = await users.createUser(base, userParams)
@@ -61,6 +64,8 @@ describe('#createUser', () => {
     expect(newUser.data.username).toMatch(/^test/)
     expect(newUser.data.last_name).toEqual('Buddy')
     expect(newUser.data.custom_attrs).toEqual(custom_attrs)
+    expect(newUser.data.phone_numbers[0].number).toEqual('111-435-1334')
+    expect(newUser.data.birthday).toEqual(date.toISOString().split('.')[0]+"Z")
   });
 })
 
