@@ -48,6 +48,8 @@ interface CreateUserParams {
   password: string,
   first_name: string,
   last_name: string,
+  birthday?: Date,
+  phone_numbers?: Array<{number: string}>
 }
 
 interface UpdateUserParams {
@@ -65,6 +67,7 @@ interface UpdateUserParams {
   weight?: number,
   height?: number,
   roles?: Array<string>,
+  phone_numbers?: Array<{number: string}>
   custom_attrs?: object,
 }
 
