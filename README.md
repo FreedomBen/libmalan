@@ -74,7 +74,7 @@ npm run test
 ### Authentication with npm
 
 To publish, you'll need an npm auth token.  There are numerous different ways to
-accomplish this, such as running `npm login`.  If you have 2 factor enalbed (which
+accomplish this, such as running `npm login`.  If you have 2 factor enabled (which
 you should if you don't), the easiest way is to issue an automation token.
 
 Put that automation token in the environment variable `NPM_TOKEN` then add to
