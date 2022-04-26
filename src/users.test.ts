@@ -18,6 +18,11 @@ describe('#getUserByUsername', () => {
     const user = await users.getUserByUsername(forSession(ra.session), ra.username)
     expect(user.data.id).toEqual(ra.id)
   });
+
+  it('throws a useful MalanError', async () => {
+    const promise = users.getUserByUsername(forSession({api_token: ''}), 'someone');
+    await expect(promise).rejects.toThrowError('Anonymous access to this method on this object is not allowed.  You must authenticate and pass a valid token.');
+  });
 })
 
 describe('#whoamiFull', () => {
@@ -66,6 +71,23 @@ describe('#createUser', () => {
     expect(newUser.data.custom_attrs).toEqual(custom_attrs)
     expect(newUser.data.phone_numbers[0].number).toEqual('111-435-1334')
     expect(newUser.data.birthday).toEqual(date.toISOString().split('.')[0]+"Z")
+  });
+
+  it("throws a useful MalanError when failing validation", async () => {
+    const rando = randomUsername();
+    const userParams = {
+      email: `${rando}@libmalan.com`,
+      username: `${rando}`,
+      password: `testuser@libmalan.com`,
+      first_name: `Tester${rando}`,
+      last_name: "Buddy",
+    };
+    await users.createUser(base, userParams);
+
+    const promise = users.createUser(base, userParams);
+    await expect(promise).rejects.toThrowError(
+      "username: has already been taken"
+    );
   });
 })
 
