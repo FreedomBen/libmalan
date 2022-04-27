@@ -10,10 +10,21 @@ export class MalanError extends Error {
 type Response = {
   response: {
     body: {
-      errors?: {
-        detail: string;
-        message: string;
-      };
+      ok: boolean;
+      code: 400 | 401 | 403 | 404 | 422 | 423 | 429 | 461 | 462 | 500;
+      message: string;
+      errors?: Record<string, string[]>;
+      detail:
+        | "Bad Request"
+        | "Unauthorized"
+        | "Forbidden"
+        | "Not Found"
+        | "Unprocessable Entity"
+        | "Locked"
+        | "Too Many Requests"
+        | "Terms of Service Required"
+        | "Privacy Policy Required"
+        | "Internal Server Error";
     };
   };
 };
@@ -23,8 +34,8 @@ function isResponse(e: unknown): e is Response {
 }
 
 export function handleResponseError(e: unknown): void {
-  if (isResponse(e) && e.response.body.errors) {
-    throw new MalanError(e.response.body.errors);
+  if (isResponse(e) && e.response.body) {
+    throw new MalanError(e.response.body);
   }
   throw e;
 }
