@@ -34,7 +34,7 @@ function isResponse(e: unknown): e is Response {
 }
 
 export function handleResponseError(e: unknown): void {
-  if (isResponse(e) && e.response.body) {
+  if (isResponse(e) && e.response.body && !e.response.body.ok) {
     throw new MalanError(e.response.body);
   }
   throw e;
