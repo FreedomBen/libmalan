@@ -3,6 +3,7 @@ import MalanConfig from './config';
 import { base, forSession } from '../test/test_config';
 
 import { regularAccount, uuidRegex, randomUsername } from '../test/test_helpers';
+import { MalanError } from './errors';
 
 describe('#getUser', () => {
   it('Gets a user by ID', async () => {
@@ -64,8 +65,31 @@ describe('#createUser', () => {
     expect(newUser.data.username).toMatch(/^test/)
     expect(newUser.data.last_name).toEqual('Buddy')
     expect(newUser.data.custom_attrs).toEqual(custom_attrs)
-    expect(newUser.data.phone_numbers[0].number).toEqual('111-435-1334')
     expect(newUser.data.birthday).toEqual(date.toISOString().split('.')[0]+"Z")
+  });
+
+  it("Errors with duplicate email", async () => {
+    const username = randomUsername()
+    const userParams = {
+      email: `${username}@libmalan.com`,
+      username,
+      password: `testuser@libmalan.com`,
+      first_name: `Tester${username}`,
+      last_name: 'Buddy',
+      phone_numbers: [{number: '111-435-1334'}],
+      birthday: new Date(),
+    }
+    await users.createUser(base, userParams)
+
+    const error = await users.createUser(base, userParams)
+      .then(
+        () => {throw new Error('should not succeed')},
+        (e) => e
+      );
+    expect(error).toBeInstanceOf(MalanError)
+    expect(error.errors).toMatchObject({
+      username: ["has already been taken"]
+    });
   });
 })
 
