@@ -156,6 +156,7 @@ function deleteUser(c: MalanConfig, id: string): Promise<BaseResp> {
 }
 
 export {
+  BaseUserResp,
   UserResponse,
   WhoamiResponse,
   CreateUserParams,

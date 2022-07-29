@@ -2,7 +2,7 @@ import * as users from './users';
 import MalanConfig from './config';
 import { base, forSession } from '../test/test_config';
 
-import { regularAccount, uuidRegex, randomUsername } from '../test/test_helpers';
+import { regularAccount, newRegularAccount, uuidRegex, randomUsername } from '../test/test_helpers';
 import { MalanError } from './errors';
 
 describe('#getUser', () => {
@@ -233,10 +233,18 @@ describe('#adminUpdateUser', () => {
 })
 
 describe('#deleteUser', () => {
-  it('works', async () => {
-    const ra = await regularAccount();
+  it('Deletes a user by ID', async () => {
+    const ra = await newRegularAccount()
     const result = await users.deleteUser(forSession(ra.session), ra.id)
 
     expect(result.ok).toEqual(true);
+
+    const error = await users.getUser(forSession(ra.session), ra.id)
+      .then(
+        () => {throw new Error('should not succeed')},
+        (e) => e
+      );
+
+    expect(error.status).toBe(404)
   });
-});
+})
