@@ -63,24 +63,26 @@ export async function moderatorAccount(): Promise<any> {
 
 export async function regularAccount(): Promise<users.UserResponse & { session: sessions.SessionResponse }> {
   if (!regular_account) {
-    try {
-      let ra = await users.createUser(base, regularUserParams())
-      ra = ra.data
-      //ra['session'] = (await sessions.login(base, ra.username, ra.password)).data
-      const session = (await sessions.login(base, ra.username, ra.password)).data
-      ra = (await users.acceptTos(forSession(session), ra.id, true)).data
-      ra = (await users.acceptPrivacyPolicy(forSession(session), ra.id, true)).data
-      ra['session'] = session
-      regular_account = ra
-      return regular_account
-    } catch(e) {
-      console.log('CAUGHT THE ERROR')
-      console.dir(e)
-      return e.response
-    }
-  } else {
-    //console.log('--- Using cached regular_account ---')
+    regular_account = await newRegularAccount()
     return regular_account
+  } else {
+    return regular_account
+  }
+}
+
+export async function newRegularAccount(): Promise<users.BaseUserResp & { session?: sessions.SessionResponse }> {
+  try {
+    let ra = await users.createUser(base, regularUserParams())
+    ra = ra.data
+    const session = (await sessions.login(base, ra.username, ra.password)).data
+    ra = (await users.acceptTos(forSession(session), ra.id, true)).data
+    ra = (await users.acceptPrivacyPolicy(forSession(session), ra.id, true)).data
+    ra['session'] = session
+    return ra
+  } catch(e) {
+    console.log('CAUGHT THE ERROR')
+    console.dir(e)
+    return e.response
   }
 }
 
