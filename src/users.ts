@@ -147,6 +147,14 @@ function acceptPrivacyPolicy(c: MalanConfig, id: string, accept: boolean): Promi
     .catch(handleResponseError)
 }
 
+function deleteUser(c: MalanConfig, id: string): Promise<BaseResp> {
+  return superagent
+    .delete(fullUrl(c, `/api/users/${id}`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then((resp => ({ ...resp, ok: true })))
+    .catch(handleResponseError)
+}
+
 export {
   UserResponse,
   WhoamiResponse,
@@ -160,4 +168,5 @@ export {
   updateUser,
   acceptTos,
   acceptPrivacyPolicy,
+  deleteUser
 }
