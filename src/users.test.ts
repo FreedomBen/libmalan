@@ -231,3 +231,12 @@ describe('#adminUpdateUser', () => {
     expect(retrievedUser.custom_attrs).toEqual(custom_attrs)
   });
 })
+
+describe('#deleteUser', () => {
+  it('works', async () => {
+    const ra = await regularAccount();
+    const result = await users.deleteUser(forSession(ra.session), ra.id)
+
+    expect(result.ok).toEqual(true);
+  });
+});
