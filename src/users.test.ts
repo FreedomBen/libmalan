@@ -2,7 +2,7 @@ import * as users from './users';
 import MalanConfig from './config';
 import { base, forSession } from '../test/test_config';
 
-import { regularAccount, newRegularAccount, uuidRegex, randomUsername } from '../test/test_helpers';
+import { adminAccount, regularAccount, newRegularAccount, rootAccount, uuidRegex, randomUsername } from '../test/test_helpers';
 import { MalanError } from './errors';
 
 describe('#getUser', () => {
@@ -239,12 +239,25 @@ describe('#deleteUser', () => {
 
     expect(result.ok).toEqual(true);
 
-    const error = await users.getUser(forSession(ra.session), ra.id)
+    const e1 = await users.getUser(forSession(ra.session), ra.id)
       .then(
         () => {throw new Error('should not succeed')},
         (e) => e
       );
 
-    expect(error.status).toBe(404)
+    // The session token should be revoked so expect a 403
+    expect(e1).toBeInstanceOf(MalanError)
+    expect(e1.code).toBe(403)
+
+    // Grab an admin token and make sure the user 404s
+    const aa = await rootAccount()
+    const e2 = await users.getUser(forSession(aa.session), ra.id)
+      .then(
+        () => {throw new Error('should not succeed')},
+        (e) => e
+      );
+
+    expect(e2).toBeInstanceOf(MalanError)
+    expect(e2.code).toBe(404)
   });
 })

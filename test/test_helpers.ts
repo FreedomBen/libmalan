@@ -7,6 +7,16 @@ let admin_account
 let moderator_account
 let regular_account
 
+function rootUserParams() {
+  return {
+    email: `root@example.com`,
+    username: `root`,
+    password: `password10`,
+    first_name: `Root`,
+    last_name: 'User',
+  }
+}
+
 function adminUserParams() {
   const num = randomStr()
   return {
@@ -42,6 +52,19 @@ function regularUserParams() {
 
 export const randomStr = () => Math.random().toString().replace(/\./g, "")
 export const randomUsername = () => `test${randomStr()}`
+
+export async function rootAccount(): Promise<any> {
+  try {
+    let aa = rootUserParams()
+    const session = (await sessions.login(base, aa.username, aa.password)).data
+    aa['session'] = session
+    return aa
+  } catch(e) {
+    console.log('[rootAccount()]: Caught an error retrieving the root account')
+    console.dir(e)
+    return e.response
+  }
+}
 
 export async function adminAccount(): Promise<any> {
   if (!admin_account) {
