@@ -65,7 +65,7 @@ describe('#createUser', () => {
     expect(newUser.data.username).toMatch(/^test/)
     expect(newUser.data.last_name).toEqual('Buddy')
     expect(newUser.data.custom_attrs).toEqual(custom_attrs)
-    expect(newUser.data.birthday).toEqual(date.toISOString().split('.')[0]+"Z")
+    expect(newUser.data.birthday).toEqual(date.toISOString().split('T')[0])
   });
 
   it("Errors with duplicate email", async () => {

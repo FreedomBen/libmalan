@@ -80,7 +80,7 @@ export async function newRegularAccount(): Promise<users.BaseUserResp & { sessio
     ra['session'] = session
     return ra
   } catch(e) {
-    console.log('CAUGHT THE ERROR')
+    console.log('[newRegularAccount()]: Caught an error creating an account')
     console.dir(e)
     return e.response
   }
