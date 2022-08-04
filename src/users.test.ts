@@ -14,8 +14,9 @@ describe('#getUser', () => {
 })
 
 describe('#getUserByUsername', () => {
-  it('Gets a user by ID', async () => {
+  it.only('Gets a user by ID', async () => {
     const ra = await regularAccount()
+    console.log("ra ", ra.session)
     const user = await users.getUserByUsername(forSession(ra.session), ra.username)
     expect(user.data.id).toEqual(ra.id)
   });
@@ -68,7 +69,7 @@ describe('#createUser', () => {
     expect(newUser.data.birthday).toEqual(date.toISOString().split('.')[0]+"Z")
   });
 
-  it("Errors with duplicate email", async () => {
+  it.only("Errors with duplicate email", async () => {
     const username = randomUsername()
     const userParams = {
       email: `${username}@libmalan.com`,
@@ -83,7 +84,8 @@ describe('#createUser', () => {
 
     const error = await users.createUser(base, userParams)
       .then(
-        () => {throw new Error('should not succeed')},
+        () => {
+          throw new Error('should not succeed')},
         (e) => e
       );
     expect(error).toBeInstanceOf(MalanError)
@@ -248,3 +250,22 @@ describe('#deleteUser', () => {
     expect(error.status).toBe(404)
   });
 })
+
+// describe('#sendPasswordResetToken', () => {
+//   it('submits a request to send a password reset token', async () => {
+//     const ra = await newRegularAccount()
+//     const result = await users.sendPasswordResetToken(forSession(ra.session), ra.username)
+
+//     expect(result.ok).toEqual(true);
+
+//     const error = await users.sendPasswordResetToken(forSession(ra.session), ra.username)
+//       .then(
+//         () => {throw new Error('should not succeed')},
+//         (e) => e
+//       );
+
+//     expect(error.status).toBe(404)
+//   });
+// })
+
+

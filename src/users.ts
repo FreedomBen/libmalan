@@ -155,6 +155,13 @@ function deleteUser(c: MalanConfig, id: string): Promise<BaseResp> {
     .catch(handleResponseError)
 }
 
+function sendPasswordResetToken(c: MalanConfig, id: string): Promise<BaseResp> {
+  return superagent
+    .post(fullUrl(c, `/api/users/${id}/reset_password/`))
+    .then((resp => ({ ...resp, ok: true })))
+    .catch(handleResponseError)
+}
+
 export {
   BaseUserResp,
   UserResponse,
@@ -169,5 +176,6 @@ export {
   updateUser,
   acceptTos,
   acceptPrivacyPolicy,
-  deleteUser
+  deleteUser,
+  sendPasswordResetToken
 }
