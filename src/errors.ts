@@ -3,6 +3,8 @@ export class MalanError extends Error {
   detail: ErrorBody["detail"];
   token_expired?: ErrorBody["token_expired"];
   errors?: ErrorBody["errors"];
+  // Error has a message property so this needs a different name to avoid collision
+  messageStr?: ErrorBody["message"];
 
   constructor(data: ErrorBody) {
     super(data.message);
@@ -10,6 +12,7 @@ export class MalanError extends Error {
     this.detail = data.detail;
     this.token_expired = data.token_expired;
     this.errors = data.errors;
+    this.messageStr = data.message;
   }
 }
 
