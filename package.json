@@ -13,6 +13,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "test": "jest --verbose",
+    "test:ci": "docker-compose pull && docker-compose up -d && echo 'wait 5 for server init' && sleep 5 && npm run test && docker-compose down",
     "test:d": "npm run build && jest --config ./jest.config.debug.js ./dist/src",
     "test:debug": "npm run build && node inspect ./node_modules/jest/bin/jest.js --runInBand --config ./jest.config.debug.js ./dist/src",
     "test:debug:chrome": "npm run build && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config ./jest.config.debug.js ./dist/src"
