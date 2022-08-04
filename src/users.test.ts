@@ -1,4 +1,5 @@
 import * as users from './users';
+import * as sessions from './sessions';
 import MalanConfig from './config';
 import { base, forSession } from '../test/test_config';
 
@@ -120,6 +121,36 @@ describe('#acceptPrivacyPolicy', () => {
 
     const acceptedUser = await users.acceptPrivacyPolicy(forSession(ra.session), ra.id, true)
     expect(acceptedUser.data.privacy_policy_accepted).toEqual(true)
+  });
+})
+
+describe('adminResetPasswordRequest', () => {
+  it('Requests a password reset token', async () => {
+    const ra = await regularAccount()
+    const root = await rootAccount()
+
+    const origUser = await users.getUser(forSession(ra.session), ra.id)
+    const resetRequest = await users.adminResetPasswordRequest(forSession(root.session), ra.id)
+    expect(resetRequest.data.password_reset_token).toMatch(/[a-zA-Z0-9]{60}/)
+  });
+})
+
+describe('adminResetPassword', () => {
+  it('Requests a password reset token', async () => {
+    const newPassword = "rabdinbewoasswird"
+    const ra = await newRegularAccount()
+    const root = await rootAccount()
+
+    const origUser = await users.getUser(forSession(ra.session), ra.id)
+    const resetRequest = await users.adminResetPasswordRequest(forSession(root.session), ra.id)
+    expect(resetRequest.data.password_reset_token).toMatch(/[a-zA-Z0-9]{60}/)
+
+    const resetResponse = await users.adminResetPassword(forSession(root.session), resetRequest.data.password_reset_token, newPassword)
+    expect(resetResponse.ok).toEqual(true)
+
+    // Login to verify new password
+    const newSession = await sessions.login(base, ra.username, newPassword)
+    expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/)
   });
 })
 
