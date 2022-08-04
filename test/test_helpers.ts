@@ -3,6 +3,7 @@ import * as sessions from '../src/sessions';
 
 import { base, forSession } from '../test/test_config';
 
+let root_account
 let admin_account
 let moderator_account
 let regular_account
@@ -54,11 +55,20 @@ export const randomStr = () => Math.random().toString().replace(/\./g, "")
 export const randomUsername = () => `test${randomStr()}`
 
 export async function rootAccount(): Promise<any> {
+  if (!root_account) {
+    root_account = await loginRootAccount()
+    return root_account
+  } else {
+    return root_account
+  }
+}
+
+export async function loginRootAccount(): Promise<any> {
   try {
-    let aa = rootUserParams()
-    const session = (await sessions.login(base, aa.username, aa.password)).data
-    aa['session'] = session
-    return aa
+    let root = rootUserParams()
+    const session = (await sessions.login(base, root.username, root.password)).data
+    root['session'] = session
+    return root
   } catch(e) {
     console.log('[rootAccount()]: Caught an error retrieving the root account')
     console.dir(e)
