@@ -18,6 +18,15 @@ describe('#logout', () => {
   });
 })
 
+describe('#logoutCurrent', () => {
+  it('Returns session as invalid', async () => {
+    const newSession = await sessions.login(base, "root", "password10")
+    expect(newSession.api_token).toMatch(/[a-zA-Z0-9]{60}/)
+    const updated = await sessions.logoutCurrent(forSession(newSession))
+    expect(updated.is_valid).toEqual(false)
+  });
+})
+
 describe('#getSession', () => {
   it('Returns session', async () => {
     const newSession = await sessions.login(base, "root", "password10")
