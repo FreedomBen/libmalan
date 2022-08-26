@@ -39,6 +39,14 @@ function logout(c: MalanConfig, user_id: string, session_id: string) {
     .catch(handleResponseError)
 }
 
+function logoutCurrent(c: MalanConfig) {
+  return superagent
+    .del(fullUrl(c, `/api/sessions/current`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .catch(handleResponseError);
+}
+
 function getSession(c: MalanConfig, user_id: string, session_id: string) {
   return superagent
     .get(fullUrl(c, `/api/users/${user_id}/sessions/${session_id}`))
@@ -65,6 +73,7 @@ export {
   login,
   LoginResponse,
   logout,
+  logoutCurrent,
   LogoutResponse,
   isValid,
   IsValidResponse,
