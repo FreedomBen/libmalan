@@ -199,5 +199,6 @@ export {
   acceptPrivacyPolicy,
   deleteUser,
   adminResetPasswordRequest,
-  adminResetPassword
+  adminResetPassword,
+  adminUpdateUser,
 }
