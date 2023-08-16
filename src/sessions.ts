@@ -15,18 +15,30 @@ type BaseSessionResponse = {
   revoked_at: string,
   user_id: string,
   is_valid: boolean,
+  extendable_until: string,
+  max_extension_secs: number,
 }
 
 type LoginResponse = BaseResp & BaseSessionResponse
 type LogoutResponse = BaseResp & BaseSessionResponse
+type ExtendResponse = BaseResp & BaseSessionResponse
 type IsValidResponse = boolean
 type IsValidWithRoleResponse = boolean
 type SessionResponse = BaseResp & BaseSessionResponse
 
-function login(c: MalanConfig, username: string, password: string, expirationSeconds = 0): Promise<LoginResponse> {
+function login(c: MalanConfig, username: string, password: string, expirationSeconds = 0, maxExtensionSeconds = 0, extendableUntilSeconds = 0): Promise<LoginResponse> {
   return superagent
     .post(fullUrl(c, "/api/sessions"))
-    .send({session: {username, password, never_expires: expirationSeconds === 0, expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds, }})
+    .send({
+      session: {
+        username,
+        password,
+        never_expires: expirationSeconds === 0,
+        expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds,
+        max_extension_secs:  maxExtensionSeconds === 0 ? undefined : maxExtensionSeconds,
+        extendable_until_seconds: extendableUntilSeconds === 0 ? undefined : extendableUntilSeconds
+      }
+    })
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
     .catch(handleResponseError)
 }
@@ -35,6 +47,15 @@ function logout(c: MalanConfig, user_id: string, session_id: string) {
   return superagent
     .del(fullUrl(c, `/api/users/${user_id}/sessions/${session_id}`))
     .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
+    .catch(handleResponseError)
+}
+
+function extend(c: MalanConfig, expireInSeconds = 0): Promise<ExtendResponse> {
+  return superagent
+    .put(fullUrl(c, "/api/sessions/current/extend"))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .send({expire_in_seconds: expireInSeconds === 0 ? undefined : expireInSeconds})
     .then(resp => ({ ...resp, data: resp.body.data, ...resp.body.data }))
     .catch(handleResponseError)
 }
@@ -74,6 +95,8 @@ export {
   LoginResponse,
   logout,
   logoutCurrent,
+  extend,
+  ExtendResponse,
   LogoutResponse,
   isValid,
   IsValidResponse,
