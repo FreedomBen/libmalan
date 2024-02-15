@@ -1,6 +1,8 @@
 import * as sessions from './sessions';
+import * as users from './users';
 import MalanConfig from './config';
 import { base, forSession } from '../test/test_config';
+import { randomUsername, uuidRegex } from '../test/test_helpers';
 
 describe('#login', () => {
   it('Returns a new API token', async () => {
@@ -25,6 +27,55 @@ describe('#logoutCurrent', () => {
     const updated = await sessions.logoutCurrent(forSession(newSession))
     expect(updated.is_valid).toEqual(false)
   });
+})
+
+describe("#logoutAllSessions", () => {
+  it("Returns session as invalid", async () => {
+    const rando = randomUsername()
+    const { data: user } = await users.createUser(base, {
+      email: `${rando}@libmalan.com`,
+      username: `${rando}`,
+      password: `testuser@libmalan.com`,
+      first_name: `Tester${rando}`,
+      last_name: "user",
+      phone_numbers: [{ number: "111-222-3333" }],
+    })
+    expect(user.id).toMatch(uuidRegex)
+    const newSession1 = await sessions.login(
+      base,
+      `${rando}@libmalan.com`,
+      `testuser@libmalan.com`
+    )
+    const newSession2 = await sessions.login(
+      base,
+      `${rando}@libmalan.com`,
+      `testuser@libmalan.com`
+    )
+    const newSession3 = await sessions.login(
+      base,
+      `${rando}@libmalan.com`,
+      `testuser@libmalan.com`
+    )
+
+    expect(newSession1.api_token).toMatch(/[a-zA-Z0-9]{60}/)
+    expect(newSession2.api_token).toMatch(/[a-zA-Z0-9]{60}/)
+    expect(newSession3.api_token).toMatch(/[a-zA-Z0-9]{60}/)
+    const { data: adminSession } = await sessions.login(
+      base,
+      "root",
+      "password10"
+    )
+    expect(adminSession.api_token).toMatch(/[a-zA-Z0-9]{60}/)
+    const response = await sessions.logoutAllSessions(
+      forSession({
+        api_token: adminSession.api_token,
+        host: base.host,
+      }),
+      user.id
+    )
+    expect(response.num_revoked).toEqual(3)
+    expect(response.status).toEqual(true)
+  })
 })
 
 describe('#getSession', () => {
