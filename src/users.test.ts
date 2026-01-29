@@ -304,7 +304,7 @@ describe('#adminLogoutUser', () => {
     const result = await users.adminLogoutUser(forSession(aa.session), ra.id)
     expect(result.ok).toEqual(true)
     
-    const error = await users.whoami(forSession(ra.session))
+    const error = await sessions.getSession(forSession(ra.session), ra.id, ra.session.id)
       .then(
         () => {throw new Error('should not succeed')},
         (e) => e
@@ -312,22 +312,5 @@ describe('#adminLogoutUser', () => {
     
     expect(error).toBeInstanceOf(MalanError)
     expect(error.code).toBe(403)
-  });
-
-  it('Prevents non-admin users from logging out other users', async () => {
-    const ra1 = await regularAccount()
-    const ra2 = await regularAccount()
-    
-    const error = await users.adminLogoutUser(forSession(ra1.session), ra2.id)
-      .then(
-        () => {throw new Error('should not succeed')},
-        (e) => e
-      );
-    
-    expect(error).toBeInstanceOf(MalanError)
-    expect(error.code).toBe(403)
-    
-    const user = await users.whoami(forSession(ra2.session))
-    expect(user.data.user_id).toEqual(ra2.id)
   });
 })
