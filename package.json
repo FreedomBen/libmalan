@@ -1,6 +1,6 @@
 {
   "name": "libmalan",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Functions to interact with a Malan backend",
   "license": "MIT",
   "main": "dist/src/index.js",
