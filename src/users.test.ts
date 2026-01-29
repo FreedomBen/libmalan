@@ -292,3 +292,25 @@ describe('#deleteUser', () => {
     expect(e2.code).toBe(404)
   });
 })
+
+describe('#adminLogoutUser', () => {
+  it('Logs out a user by invalidating their sessions', async () => {
+    const ra = await regularAccount()
+    const aa = await rootAccount()
+    
+    const userBefore = await users.whoami(forSession(ra.session))
+    expect(userBefore.data.user_id).toEqual(ra.id)
+    
+    const result = await users.adminLogoutUser(forSession(aa.session), ra.id)
+    expect(result.ok).toEqual(true)
+    
+    const error = await sessions.getSession(forSession(ra.session), ra.id, ra.session.id)
+      .then(
+        () => {throw new Error('should not succeed')},
+        (e) => e
+      );
+    
+    expect(error).toBeInstanceOf(MalanError)
+    expect(error.code).toBe(403)
+  });
+})
