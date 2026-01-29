@@ -183,6 +183,14 @@ function adminResetPassword(c: MalanConfig, token: string, newPassword: string):
     .catch(handleResponseError)
 }
 
+function adminLogoutUser(c: MalanConfig, id: string): Promise<ResetPasswordResponse> {
+  return superagent
+    .delete(fullUrl(c, `/api/users/${id}/sessions`))
+    .set('Authorization', `Bearer ${c.api_token}`)
+    .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
+    .catch(handleResponseError)
+}
+
 export {
   BaseUserResp,
   UserResponse,
@@ -201,4 +209,5 @@ export {
   adminResetPasswordRequest,
   adminResetPassword,
   adminUpdateUser,
+  adminLogoutUser,
 }
