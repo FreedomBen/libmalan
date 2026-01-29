@@ -107,9 +107,8 @@ echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
 
 1.  Update version number in `package.json`
 1.  Install latest packages:  `npm install`
-1.  Run a build:  `npm run build`
 1.  Build a tarball you can verify:  `npm pack`
 1.  Commit updated package.json and package-lock.json
 1.  Tag new version:  Ex:  `git tag v0.0.17`
 1.  Push commits and tags:  `git push && git push --tags`
-1.  Publish latest version:  `npm publish`
+1.  Build and publish latest version:  `npm publish`

@@ -1,6 +1,6 @@
 {
   "name": "libmalan",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Functions to interact with a Malan backend",
   "license": "MIT",
   "main": "dist/src/index.js",
@@ -12,6 +12,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run build",
     "test": "jest --verbose",
     "test:ci": "docker-compose pull && docker-compose up -d && echo 'wait 5 for server init' && sleep 5 && npm run test && docker-compose down",
     "test:d": "npm run build && jest --config ./jest.config.debug.js ./dist/src",
