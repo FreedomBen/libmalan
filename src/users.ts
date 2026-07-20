@@ -5,6 +5,28 @@ import { fullUrl, BaseResp } from './utils';
 import MalanConfig from './config';
 import { handleResponseError } from './errors';
 
+type UserPhoneNumber = {
+  id: string,
+  user_id: string,
+  primary: boolean,
+  number: string,
+  verified_at: string,
+}
+
+type UserAddress = {
+  id: string,
+  user_id: string,
+  primary: boolean,
+  verified_at: string,
+  name: string,
+  line_1: string,
+  line_2: string,
+  country: string,
+  city: string,
+  state: string,
+  postal: string,
+}
+
 type BaseUserResp = {
   id:  string,
   birthday: string,
@@ -30,6 +52,9 @@ type BaseUserResp = {
   tos_accepted: boolean,
   privacy_policy_accepted: boolean,
   custom_attrs: object,
+  // Omitted by the server when the user is fetched with abbr
+  phone_numbers?: Array<UserPhoneNumber>,
+  addresses?: Array<UserAddress>,
 }
 
 type UserResponse = BaseResp & BaseUserResp
@@ -96,17 +121,22 @@ function createUser(c: MalanConfig, params: CreateUserParams): Promise<UserRespo
     .catch(handleResponseError)
 }
 
-function getUserByUsername(c: MalanConfig, username: string): Promise<UserResponse> {
+// The server enables abbreviated mode by the presence of the abbr param
+// (any value), so it is only sent when requested. Abbreviated responses
+// omit phone_numbers and addresses.
+function getUserByUsername(c: MalanConfig, username: string, abbr = false): Promise<UserResponse> {
   return superagent
     .get(fullUrl(c, `/api/users/${username}`))
+    .query(abbr ? { abbr: true } : {})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
     .catch(handleResponseError)
 }
 
-function getUser(c: MalanConfig, id: string): Promise<UserResponse> {
+function getUser(c: MalanConfig, id: string, abbr = false): Promise<UserResponse> {
   return superagent
     .get(fullUrl(c, `/api/users/${id}`))
+    .query(abbr ? { abbr: true } : {})
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
     .catch(handleResponseError)
@@ -199,6 +229,8 @@ function adminLogoutUser(c: MalanConfig, id: string): Promise<LogoutUserResponse
 
 export {
   BaseUserResp,
+  UserPhoneNumber,
+  UserAddress,
   UserResponse,
   WhoamiResponse,
   CreateUserParams,

@@ -20,6 +20,58 @@ describe('#getUserByUsername', () => {
     const user = await users.getUserByUsername(forSession(ra.session), ra.username)
     expect(user.data.id).toEqual(ra.id)
   });
+
+  it('Omits phone_numbers and addresses when abbr is requested', async () => {
+    const ra = await regularAccount()
+
+    const full = await users.getUserByUsername(forSession(ra.session), ra.username)
+    expect(full.data.phone_numbers).toEqual(expect.any(Array))
+    expect(full.data.addresses).toEqual(expect.any(Array))
+
+    const abbr = await users.getUserByUsername(forSession(ra.session), ra.username, true)
+    expect(abbr.data.id).toEqual(ra.id)
+    expect(abbr.data.phone_numbers).toBeUndefined()
+    expect(abbr.data.addresses).toBeUndefined()
+  });
+})
+
+describe('#getUser with abbr', () => {
+  it('Includes phone_numbers and addresses by default but omits them with abbr', async () => {
+    const rando = randomUsername()
+    const newUser = await users.createUser(base, {
+      email: `${rando}@libmalan.com`,
+      username: rando,
+      password: 'testuser@libmalan.com',
+      first_name: `Tester${rando}`,
+      last_name: 'Buddy',
+      phone_numbers: [{number: '555-121-3434'}],
+    })
+    const session = (await sessions.login(base, rando, 'testuser@libmalan.com')).data
+
+    const full = await users.getUser(forSession(session), newUser.data.id)
+    expect(full.data.id).toEqual(newUser.data.id)
+    expect(full.data.phone_numbers).toHaveLength(1)
+    expect(full.data.phone_numbers[0].number).toEqual('555-121-3434')
+    expect(full.data.addresses).toEqual([])
+
+    const abbr = await users.getUser(forSession(session), newUser.data.id, true)
+    expect(abbr.data.id).toEqual(newUser.data.id)
+    expect(abbr.data.username).toEqual(rando)
+    expect(abbr.data.phone_numbers).toBeUndefined()
+    expect(abbr.data.addresses).toBeUndefined()
+  });
+
+  it('Returns the same core fields with and without abbr', async () => {
+    const ra = await regularAccount()
+
+    const full = await users.getUser(forSession(ra.session), ra.id)
+    const abbr = await users.getUser(forSession(ra.session), ra.id, true)
+
+    expect(abbr.data.id).toEqual(full.data.id)
+    expect(abbr.data.username).toEqual(full.data.username)
+    expect(abbr.data.email).toEqual(full.data.email)
+    expect(abbr.data.roles).toEqual(full.data.roles)
+  });
 })
 
 describe('#whoamiFull', () => {

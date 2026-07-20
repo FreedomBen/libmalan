@@ -23,6 +23,9 @@ malanConfig.api_token = resp.api_token
 // Get the user object
 const user = (await malan.getUser(malanConfig, user_id)).data
 
+// Get an abbreviated user object (omits phone_numbers and addresses)
+const abbrUser = (await malan.getUser(malanConfig, user_id, true)).data
+
 // Get the session object
 let session = await malan.getSession(malanConfig, user.id, session_id)
 
