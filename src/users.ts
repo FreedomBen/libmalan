@@ -144,7 +144,7 @@ function getUser(c: MalanConfig, id: string, abbr = false): Promise<UserResponse
 
 function whoamiFull(c: MalanConfig): Promise<UserResponse> {
   return superagent
-    .get(fullUrl(c, `/api/users/me`))
+    .get(fullUrl(c, `/api/users/current`))
     .set('Authorization', `Bearer ${c.api_token}`)
     .then(resp => ({ ...resp, data: { ...resp.body.data }, ok: true }))
     .catch(handleResponseError)
