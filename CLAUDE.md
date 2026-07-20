@@ -18,11 +18,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | ------------------- | ------------------------------------------------------------------------ |
 | Build (clean + tsc) | `npm run build`                                                          |
 | Run all tests       | `npm test` (alias for `jest --verbose`)                                  |
-| Run a single test   | `npx jest src/users.test.ts` or `npx jest -t "creates a user"`           |
-| Full CI test cycle  | `npm run test:ci` (docker-compose up → test → down; needs docker)        |
+| Run a single test   | `npx jest src/users.test.ts` or `npx jest -t "Creates a new user"`       |
+| Full CI test cycle  | `npm run test:ci` (docker-compose pull + up → test → down; needs docker) |
 | Debug tests         | `npm run test:debug` (node inspector) or `npm run test:debug:chrome`     |
 
 The package builds to `dist/` (entry `dist/src/index.js`, types `dist/src/index.d.ts`). `prepublishOnly` rebuilds before publish.
+
+`test:d`, `test:debug`, and `test:debug:chrome` all build and then run the **compiled** tests in `dist/src` via `jest.config.debug.js` — no ts-jest, and `test_setup.ts`'s 30s timeout is not loaded — so you are debugging the compiled JS, not the TS sources.
+
+The toolchain is old (TypeScript 3.9, Jest 26, superagent 5). Avoid TypeScript syntax newer than 3.9 (e.g. `satisfies`, `override`, template literal types).
 
 ## Tests require a live Malan backend
 
@@ -37,14 +41,14 @@ Tests assume a freshly-initialized Malan with the default root user (`root` / `p
 
 - **`src/index.ts`** re-exports everything from `sessions`, `users`, and `errors`. That's the entire public surface.
 - **`src/config.ts`** — defines the `MalanConfig` interface (`host`, `api_token`). Every API function takes a `MalanConfig` as its first argument; there is no global client/state.
-- **`src/sessions.ts`, `src/users.ts`** — the API functions. They build URLs via `utils.fullUrl`, send via `superagent`, and call `handleResponseError` in `catch` blocks.
+- **`src/sessions.ts`, `src/users.ts`** — the API functions. They build URLs via `utils.fullUrl`, send via `superagent`, and call `handleResponseError` in `catch` blocks. Success responses are flattened into `BaseResp & <payload>`: the raw superagent response is spread in, plus a `data` field holding Malan's payload. `sessions.ts` additionally spreads the payload's fields to the top level; `users.ts` keeps the payload under `.data` only and hardcodes `ok: true`. Match the shape of the file you're extending.
 - **`src/errors.ts`** — `MalanError extends Error` carries Malan's structured error body (code, detail, token_expired, validation errors). `handleResponseError(e)` is the standard pattern: it type-guards superagent's error response shape and rethrows as `MalanError`, otherwise rethrows untouched. New API calls should follow this pattern.
 - **`src/utils.ts`** — `fullUrl()` adds `http://` if the host has no scheme; `BaseResp` is the shared response shape.
 
 ### Test layout (slightly unusual)
 
 - Test files are **colocated with source** (`src/users.test.ts`, `src/sessions.test.ts`). Jest's `roots` is `['src']` (see `jest.config.js`), so anything under `test/` is **not auto-discovered**.
-- `test/` holds shared helpers imported by the colocated tests: `test_config.ts` (the `base` config pointing at `0.0.0.0:4000`), `test_helpers.ts` (account factories — root/admin/moderator/regular — that lazy-create and cache users via the real API), and `test_setup.ts` (sets a 30s Jest timeout, loaded via `setupFilesAfterEnv`).
+- `test/` holds shared helpers imported by the colocated tests: `test_config.ts` (the `base` config pointing at `0.0.0.0:4000`, plus `forSession(session)` which derives a config authenticated with that session's `api_token`), `test_helpers.ts` (account factories — root/admin/moderator/regular — that lazy-create and cache users via the real API), and `test_setup.ts` (sets a 30s Jest timeout, loaded via `setupFilesAfterEnv`).
 - `test/login_test.ts` is **not** run by the default Jest config (it's outside `roots`). Treat it as a standalone script unless you change the config.
 - The `dist/` folder ships compiled `*.test.js` files but `package.json`'s `files` array excludes them from the published tarball.
 
