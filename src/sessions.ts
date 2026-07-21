@@ -8,6 +8,8 @@ import { handleResponseError } from './errors';
 type BaseSessionResponse = {
   api_token: string,
   authenticated_at: string,
+  // "password", "password+totp", or "password+backup_code"
+  authenticated_by: string,
   expires_at: string,
   id: string,
   ip_address: string,
@@ -26,13 +28,17 @@ type IsValidResponse = boolean
 type IsValidWithRoleResponse = boolean
 type SessionResponse = BaseResp & BaseSessionResponse
 
-function login(c: MalanConfig, username: string, password: string, expirationSeconds = 0, maxExtensionSeconds = 0, extendableUntilSeconds = 0): Promise<LoginResponse> {
+// When the user has TOTP MFA enabled, login without totpCode rejects with a
+// MalanError carrying mfa_required: true -- re-submit with totpCode set to a
+// 6-digit TOTP code or a 12-character single-use backup code.
+function login(c: MalanConfig, username: string, password: string, expirationSeconds = 0, maxExtensionSeconds = 0, extendableUntilSeconds = 0, totpCode?: string): Promise<LoginResponse> {
   return superagent
     .post(fullUrl(c, "/api/sessions"))
     .send({
       session: {
         username,
         password,
+        totp_code: totpCode,
         never_expires: expirationSeconds === 0,
         expires_in_seconds: expirationSeconds === 0 ? undefined : expirationSeconds,
         max_extension_secs:  maxExtensionSeconds === 0 ? undefined : maxExtensionSeconds,
