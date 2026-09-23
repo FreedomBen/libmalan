@@ -40,6 +40,9 @@ type BaseUserResp = {
   last_name: string,
   nick_name: string,
   password: string,
+  // When the password was last changed (ISO8601). null when the password
+  // predates tracking. A same-password no-op change/reset does not bump it.
+  password_changed_at: string | null,
   preferences: { theme: string },
   privacy_policy_accept_events: Array<string>,
   roles: Array<string>,
