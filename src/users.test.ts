@@ -146,6 +146,77 @@ describe('#createUser', () => {
   });
 })
 
+describe('password_changed_at', () => {
+  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+
+  async function selfContainedAccount() {
+    const username = randomUsername()
+    const password = 'testuser@libmalan.com'
+    const created = await users.createUser(base, {
+      email: `${username}@libmalan.com`,
+      username,
+      password,
+      first_name: `Tester${username}`,
+      last_name: 'Buddy',
+    })
+    const session = (await sessions.login(base, username, password)).data
+    await users.acceptTos(forSession(session), created.data.id, true)
+    await users.acceptPrivacyPolicy(forSession(session), created.data.id, true)
+    return { id: created.data.id, username, password, session, created }
+  }
+
+  it('Is stamped at creation and returned when fetching the user', async () => {
+    const account = await selfContainedAccount()
+    expect(account.created.data.password_changed_at).toMatch(iso8601Regex)
+
+    const fetched = await users.getUser(forSession(account.session), account.id)
+    expect(fetched.data.password_changed_at).toEqual(account.created.data.password_changed_at)
+  });
+
+  it('Is preserved by a same-password no-op and bumped by a real change', async () => {
+    const account = await selfContainedAccount()
+    const orig = (await users.getUser(forSession(account.session), account.id)).data.password_changed_at
+    expect(orig).toMatch(iso8601Regex)
+
+    // Updating to the current password is accepted as a no-op: the stamp
+    // (the password's age) is preserved
+    const noop = await users.updateUser(forSession(account.session), account.id, {
+      password: account.password,
+    })
+    expect(noop.data.password_changed_at).toEqual(orig)
+
+    // ...and the session making the no-op is not revoked
+    const stillValid = await users.getUser(forSession(account.session), account.id)
+    expect(stillValid.data.password_changed_at).toEqual(orig)
+
+    // The stamp has second precision, so push the real change into a
+    // later second before asserting it moved
+    await new Promise((resolve) => setTimeout(resolve, 1100))
+
+    const newPassword = 'newpassword@libmalan.com'
+    const changed = await users.updateUser(forSession(account.session), account.id, {
+      password: newPassword,
+    })
+    expect(changed.data.password_changed_at).toMatch(iso8601Regex)
+    expect(new Date(changed.data.password_changed_at).getTime())
+      .toBeGreaterThan(new Date(orig).getTime())
+
+    // A real password change revokes the session that made it
+    const error = await users.getUser(forSession(account.session), account.id)
+      .then(
+        () => {throw new Error('should not succeed')},
+        (e) => e
+      );
+    expect(error).toBeInstanceOf(MalanError)
+    expect(error.code).toBe(403)
+
+    // The new stamp survives a fresh login and fetch
+    const session = (await sessions.login(base, account.username, newPassword)).data
+    const fetched = await users.getUser(forSession(session), account.id)
+    expect(fetched.data.password_changed_at).toEqual(changed.data.password_changed_at)
+  });
+})
+
 describe('#acceptTos', () => {
   it('Rejects and Accepts the Terms of Service', async () => {
     const ra = await regularAccount()
