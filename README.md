@@ -34,6 +34,33 @@ const isAdmin = await malan.isValidWithRole(malanConfig, user.id, session_id, "a
 
 // Log the user out (this will invalidate the API token)
 session = await malan.logout(malanConfig, user.id, session_id)
+
+// --- Multi-factor authentication (TOTP) ---
+
+// Check MFA status:  "none", "pending", or "enabled"
+const status = (await malan.getTotpStatus(malanConfig, user_id)).data
+
+// Begin enrollment (requires the user's password).  Returns the secret,
+// otpauth:// URI, and a QR code SVG for the user's authenticator app.
+// These are disclosed only by this call, so display them now.
+const enrollment = (await malan.startTotpEnrollment(malanConfig, user_id, "password")).data
+
+// Confirm enrollment with a code from the authenticator app.  Returns
+// single-use backup codes (shown only once)
+const { backup_codes } = (await malan.confirmTotpEnrollment(malanConfig, user_id, "123456")).data
+
+// Once enabled, logins must also supply a TOTP or backup code
+const mfaSession = await malan.login(malanConfig, "username", "password", 0, 0, 0, "123456")
+
+// Replace the backup codes (invalidates all previous ones)
+const regenerated = (await malan.regenerateTotpBackupCodes(malanConfig, user_id, "password", "123456")).data
+
+// Turn MFA off (requires the password plus a TOTP or backup code)
+await malan.disableTotp(malanConfig, user_id, "password", "123456")
+
+// Admins can force-disable MFA for a locked-out user (no password/code;
+// revokes all of that user's sessions)
+await malan.adminDeleteTotp(adminConfig, user_id)
 ```
 
 ## Running the tests
